@@ -1,0 +1,1 @@
+window.ui5_performance_data = {};
