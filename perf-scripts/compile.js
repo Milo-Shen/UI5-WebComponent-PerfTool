@@ -22,19 +22,16 @@ const classReg = /class=".*?"/gi;
 const styleReg = /style=".*?"/gi;
 const folderNormalizeReg = /[<>/\\|:*?"]/gi;
 const appTemp = fs.readFileSync(ui5_temp, encoding);
-const ui5_main_prefix = 'import "@ui5/webcomponents/dist/%destination%"';
-const ui5_fiori_prefix = 'import "@ui5/webcomponents-fiori/dist/%destination%"';
 
 /**
  * function: convert ui5 example html to react project
- * @param ui5Prefix
  * @param samples
  * @param convertedFolder
  * @param builtArray
  * @param mapTag
  * @param keyMap
  */
-function convertHtmlToReact(ui5Prefix, samples, convertedFolder, builtArray, mapTag, keyMap) {
+function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap) {
   IO.walk(samples, (file) => {
     const extname = path.extname(file);
     if (extname !== htmlSuffix) return;
@@ -75,11 +72,9 @@ function convertHtmlToReact(ui5Prefix, samples, convertedFolder, builtArray, map
         .filter((x) => !!x.includes("ui5"))
         .forEach((_tag) => {
           const tag = keyMap[_tag] || _tag;
-          // todo
-          const folder = mapTag[tag];
-          if (folder) {
-            importJsx += `${ui5Prefix.replace("%destination%", folder)}${EOL}`;
-            importJsx += `import "@ui5/webcomponents-fiori/dist/%destination%"`;
+          const componentInfo = mapTag[tag];
+          if (componentInfo) {
+            importJsx += `import "${componentInfo.lib}/${componentInfo.folder}"${EOL}`;
           } else importJsx += `\/\/ ignore import ${tag} ${EOL}`;
         });
       let innerJSX = section.innerHTML;
