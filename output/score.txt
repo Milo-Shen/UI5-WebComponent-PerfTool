@@ -1,1 +1,1 @@
-|Basic Avatar| performance: 0|accessibility: 0|best-practices: 0|seo: 0|
+|Basic Avatar| performance: 100|accessibility: 100|best-practices: 93|seo: 100|

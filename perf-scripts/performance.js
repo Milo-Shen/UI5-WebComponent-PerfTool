@@ -15,6 +15,7 @@ const IO = require("./io");
 const { tryUsePort } = require("./network");
 const { execCommand } = require("./util");
 const { convertHtmlToReact } = require("./compile");
+const lighthouseCfg = require("./config/lighthouse-global");
 
 // Paths
 const dirname = path.dirname(__dirname);
@@ -145,19 +146,9 @@ function generateMap(folderPath) {
         // using LightHouse
         log.setLevel("info");
         const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless"] });
-        const options = {
-          output: "html",
-          onlyCategories: ["performance", "accessibility", "best-practices", "seo"],
-          port: chrome.port,
-          throttling: {
-            cpuSlowdownMultiplier: 4,
-            rttMs: 0,
-            throughputKbps: 0,
-            requestLatencyMs: 0,
-            downloadThroughputKbps: 0,
-            uploadThroughputKbps: 0,
-          },
-        };
+
+        // The option of lighthouse
+        const options = lighthouseCfg(chrome.port);
         const runnerResult = await lighthouse(`http://127.0.0.1:${port}`, options);
 
         // `.report` is the HTML report as a string
