@@ -8,7 +8,9 @@
 		var column = $(this).data('column') + ""; 
 
 		$(table2).find("."+column).addClass('hov-column-'+ verTable);
-		$(table1).find(".row100.head ."+column).addClass('hov-column-head-'+ verTable);
+		$(table1)
+      .find(".row100.head ." + column)
+      .addClass("hov-column-head-" + verTable);
 	});
 
 	$('.column100').on('mouseout',function(){

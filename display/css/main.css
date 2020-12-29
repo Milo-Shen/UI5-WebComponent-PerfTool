@@ -198,7 +198,7 @@ th, td {
 
 .table100-head th {
   padding-top: 18px;
-  padding-bottom: 18px;
+  padding-bottom: 10px;
 }
 
 .table100-body td {
@@ -231,11 +231,11 @@ th, td {
 
 .table100.ver1 th {
   font-family: Lato-Bold;
-  font-size: 18px;
   color: #fff;
   line-height: 1.4;
-
   background-color: #6c7ae0;
+  font-size: 12px;
+  text-align: center;
 }
 
 .table100.ver1 td {
@@ -243,6 +243,7 @@ th, td {
   font-size: 15px;
   color: #808080;
   line-height: 1.4;
+  text-align: center;
 }
 
 .table100.ver1 .table100-body tr:nth-child(even) {

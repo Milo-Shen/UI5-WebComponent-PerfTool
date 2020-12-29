@@ -15,13 +15,5 @@ module.exports = (port) => ({
     "cumulative-layout-shift",
     "interactive",
   ],
-  port: port,
-  throttling: {
-    cpuSlowdownMultiplier: 4,
-    rttMs: 0,
-    throughputKbps: 0,
-    requestLatencyMs: 0,
-    downloadThroughputKbps: 0,
-    uploadThroughputKbps: 0,
-  },
+  port: port
 });

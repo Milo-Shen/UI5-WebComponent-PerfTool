@@ -16,6 +16,7 @@ const { tryUsePort } = require("./network");
 const { execCommand } = require("./util");
 const { convertHtmlToReact } = require("./compile");
 const lighthouseCfg = require("./config/lighthouse-global");
+const metricCfg = require("./config/metrics");
 
 // Paths
 const dirname = path.dirname(__dirname);
@@ -27,6 +28,7 @@ const ui5_main_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents/dis
 const ui5_fiori_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents-fiori/dist");
 const converted_main = path.resolve(dirname, "converted/main");
 const converted_fiori = path.resolve(dirname, "converted/fiori");
+const display_data = path.resolve(dirname, "display/performance-data.js");
 const build = path.resolve(dirname, "build");
 const output = path.resolve(dirname, "output");
 
@@ -35,6 +37,7 @@ const EOL = os.EOL;
 const encoding = "utf8";
 const jsSuffix = ".js";
 const tagReg = /tag: *."(.*?)",/gi;
+const display_prefix = "window.ui5_performance_data = ";
 
 // Store
 const mapTag = {};
@@ -94,8 +97,7 @@ function generateMap(folderPath) {
   let curTask = 0;
   let totalTask = builtArray.length;
 
-  // todo
-  for (let i = 0, len = 1 || builtArray.length; i < len; i++) {
+  for (let i = 0, len = builtArray.length; i < len; i++) {
     const file = builtArray[i];
     const fileContent = fs.readFileSync(file, encoding);
     fs.writeFileSync(appJs, fileContent, encoding);
@@ -132,12 +134,22 @@ function generateMap(folderPath) {
       console.log(`express server start on port: ${port}`);
 
       let testOutput = "";
+      let ui5PerfData = {};
       curTask = 0;
       totalTask = compiledArray.length;
 
+      // init lighthouse config
+      const _lighthouseCfg = lighthouseCfg(null);
+      ui5PerfData.title = [
+        ..._lighthouseCfg.onlyCategories.map((x) => x.toUpperCase()),
+        ..._lighthouseCfg.onlyAudits.map((x) => String(metricCfg[x]).toUpperCase()),
+      ];
+
       for (let i = 0, len = compiledArray.length; i < len; i++) {
         let scoreStr = "";
+        let scoreArray = [];
         const builtSrc = compiledArray[i];
+        const caseName = path.basename(path.dirname(builtSrc));
 
         // copy compiled code to build folder
         IO.resetFolderRecursive(build);
@@ -148,17 +160,31 @@ function generateMap(folderPath) {
         const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless"] });
 
         // The option of lighthouse
-        const options = lighthouseCfg(chrome.port);
-        const runnerResult = await lighthouse(`http://127.0.0.1:${port}`, options);
+        const config = { ..._lighthouseCfg, port: chrome.port };
+        const runnerResult = await lighthouse(`http://127.0.0.1:${port}`, config);
 
-        // `.report` is the HTML report as a string
+        // save the lighthouse report
         const reportHtml = String(runnerResult.report);
         const dirBuiltPath = path.dirname(builtSrc);
         const testedName = path.basename(dirBuiltPath);
         const destPath = path.resolve(dirBuiltPath, "lighthouseReport.html");
         fs.writeFileSync(destPath, reportHtml, encoding);
 
-        // `.lhr` is the Lighthouse Result as a JS object
+        // insert the case name
+        scoreArray.push(caseName);
+
+        // save performance data to display table
+        _lighthouseCfg.onlyCategories.forEach((x) => {
+          const performance = runnerResult.lhr.categories[x].score * 100;
+          scoreArray.push(performance);
+        });
+        _lighthouseCfg.onlyAudits.forEach((x) => {
+          scoreArray.push(runnerResult.lhr.audits[x].displayValue);
+        });
+        ui5PerfData.data = ui5PerfData.data || [];
+        ui5PerfData.data.push(scoreArray);
+
+        // save performance data to txt ( deprecated )
         const categories = runnerResult.lhr.categories;
         for (let key in categories) {
           if (categories.hasOwnProperty(key)) {
@@ -169,7 +195,6 @@ function generateMap(folderPath) {
 
         testOutput += `|${testedName}| ${scoreStr}${EOL}`;
         console.log("Report is done for: ", testedName);
-        console.log(scoreStr);
 
         await chrome.kill();
 
@@ -180,6 +205,9 @@ function generateMap(folderPath) {
           `test progress: ${progress}%, current: ${curTask}, total task: ${totalTask}, elapsed time: ${elapsedTime} s ${EOL}`
         );
       }
+
+      const perfDataJs = `${display_prefix}${JSON.stringify(ui5PerfData)}`;
+      fs.writeFileSync(display_data, perfDataJs, encoding);
 
       const outputFile = path.resolve(output, "score.txt");
       fs.writeFileSync(outputFile, testOutput, encoding);
