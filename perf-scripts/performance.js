@@ -86,9 +86,6 @@ function generateMap(folderPath) {
   // Generate examples - fiori
   convertHtmlToReact(ui5_fiori_samples, converted_fiori, builtArray, mapTag, keyMap);
 
-  //to do
-  return;
-
   // generate react project
   const appJs = path.resolve(dirname, "src/App.js");
   const appContent = fs.readFileSync(appJs, encoding);
@@ -96,7 +93,8 @@ function generateMap(folderPath) {
   let curTask = 0;
   let totalTask = builtArray.length;
 
-  for (let i = 0, len = builtArray.length; i < len; i++) {
+  // todo
+  for (let i = 0, len = 1 || builtArray.length; i < len; i++) {
     const file = builtArray[i];
     const fileContent = fs.readFileSync(file, encoding);
     fs.writeFileSync(appJs, fileContent, encoding);
@@ -130,7 +128,7 @@ function generateMap(folderPath) {
   // open express server
   await tryUsePort(5001, (port) => {
     const server = app.listen(port, async () => {
-      console.log("express server start on port: 5555");
+      console.log(`express server start on port: ${port}`);
 
       let testOutput = "";
       curTask = 0;
@@ -160,7 +158,7 @@ function generateMap(folderPath) {
             uploadThroughputKbps: 0,
           },
         };
-        const runnerResult = await lighthouse("http://127.0.0.1:5555", options);
+        const runnerResult = await lighthouse(`http://127.0.0.1:${port}`, options);
 
         // `.report` is the HTML report as a string
         const reportHtml = String(runnerResult.report);

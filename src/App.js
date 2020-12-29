@@ -10,7 +10,7 @@ import "@ui5/webcomponents/dist/Assets.js";
 import "@ui5/webcomponents-icons/dist/Assets.js";
 
 // Import Tested Component
-import "@ui5/webcomponents/dist/Calendar";
+import "@ui5/webcomponents/dist/Avatar";
 
 // Import CSS
 import "./App.css";
@@ -18,11 +18,13 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <h3>Calendar with selection type Range</h3>
+      <h4>Avatar Sizes</h4>
       <div className="snippet">
-        <div className="datepicker-width">
-          <ui5-calendar selection="Range"></ui5-calendar>
-        </div>
+        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_3.png" size="XS"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_4.png" size="S"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_5.png" size="M"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/man_avatar_1.png" size="L"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/man_avatar_3.png" size="XL"></ui5-avatar>
       </div>
     </div>
   );
