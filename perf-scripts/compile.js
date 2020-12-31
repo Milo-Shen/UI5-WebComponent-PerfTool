@@ -47,12 +47,15 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
     let sections = dom.window.document.querySelectorAll("section");
     if (!sections.length) return;
 
-    // remove styles and scripts from example section
     sections.forEach((section) => {
+      // remove styles and scripts from example section
       const scripts = section.querySelectorAll("script");
       if (scripts.length) scripts.forEach((script) => script.remove());
       const styles = section.querySelectorAll("style");
       if (styles.length) styles.forEach((style) => style.remove());
+      // add alt attribute to img tag
+      const images = section.querySelectorAll("img");
+      if (images.length) images.forEach((image) => image.setAttribute("alt", "perf-tool"));
     });
 
     // remove comments and compile html to jsx
