@@ -81,7 +81,7 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
           } else importJsx += `\/\/ ignore import ${tag} ${EOL}`;
         });
       let innerJSX = section.innerHTML;
-      innerJSX = prettier.format(innerJSX, { ...prettierConfig, parser: "html" });
+      innerJSX = prettier.format(innerJSX, { parser: "html", printWidth: 200 });
 
       // convert html syntax to react syntax ( class -> className & style -> {{ style name: style value }} )
       innerJSX = innerJSX
