@@ -115,7 +115,7 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
       const folderName = basename.replace(".sample.html", "");
       const builtPath = path.resolve(convertedFolder, folderName, sampleName);
       const builtFile = path.resolve(builtPath, `index.js`);
-      builtArray.push(builtFile);
+      builtArray.push({ path: builtFile, sampleName });
       IO.mkFolderSyncRecursive(builtPath);
       fs.writeFileSync(builtFile, result, encoding);
       console.log(`UI5 example converted: ${sampleName}`);

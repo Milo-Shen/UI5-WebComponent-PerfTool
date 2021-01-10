@@ -24,3 +24,4 @@ yarn-error.log*
 /.idea/
 /ui5-webcomponents/
 /converted/
+/package-lock.json

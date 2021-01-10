@@ -15,7 +15,8 @@ const IO = require("./io");
 const { tryUsePort } = require("./network");
 const { execCommand } = require("./util");
 const { convertHtmlToReact } = require("./compile");
-const lighthouseCfg = require("./config/lighthouse-global");
+const lighthouseCfg_Global = require("./config/lighthouse-global");
+const lighthouseCfg_Pc = require("./config/lighthouse-pc");
 const metricCfg = require("./config/metrics");
 
 // Paths
@@ -34,6 +35,7 @@ const output = path.resolve(dirname, "output");
 
 // Constant
 const EOL = os.EOL;
+const Platform = os.platform();
 const encoding = "utf8";
 const jsSuffix = ".js";
 const tagReg = /tag: *."(.*?)",/gi;
@@ -50,7 +52,10 @@ const keyMap = {};
 function generateMap(folderPath) {
   IO.walkSingle(folderPath, (file) => {
     // get lib name
-    const libName = folderPath.slice(folderPath.lastIndexOf("@"));
+    let libName = folderPath.slice(folderPath.lastIndexOf("@"));
+    if (Platform === "win32") {
+      libName = libName.replace(/\\/g, "/");
+    }
     // get folder name according to tag name
     let regRes = null;
     const extname = path.extname(file);
@@ -91,6 +96,7 @@ function generateMap(folderPath) {
   convertHtmlToReact(ui5_fiori_samples, converted_fiori, builtArray, mapTag, keyMap);
 
   // generate react project
+  console.log("Start to compile examples ...");
   const appJs = path.resolve(dirname, "src/App.js");
   const appContent = fs.readFileSync(appJs, encoding);
   const start = new Date();
@@ -98,7 +104,8 @@ function generateMap(folderPath) {
   let totalTask = builtArray.length;
 
   for (let i = 0, len = builtArray.length; i < len; i++) {
-    const file = builtArray[i];
+    const { path: file, sampleName } = builtArray[i];
+    console.log(`compiling: ${sampleName}`);
     const fileContent = fs.readFileSync(file, encoding);
     fs.writeFileSync(appJs, fileContent, encoding);
     const folder = path.dirname(file);
@@ -139,12 +146,13 @@ function generateMap(folderPath) {
       totalTask = compiledArray.length;
 
       // init lighthouse config
-      const _lighthouseCfg = lighthouseCfg(null);
+      const _lighthouseCfg = lighthouseCfg_Global(null);
       ui5PerfData.title = [
         ..._lighthouseCfg.onlyCategories.map((x) => x.toUpperCase()),
         ..._lighthouseCfg.onlyAudits.map((x) => String(metricCfg[x]).toUpperCase()),
       ];
 
+      console.log("Start to test UI5-WebComponents with lighthouse ( mobile mode )");
       for (let i = 0, len = compiledArray.length; i < len; i++) {
         let scoreStr = "";
         let scoreArray = [];

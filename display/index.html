@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Table V04</title>
+    <title>UI5 WebComponents Performance</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
@@ -54,7 +54,7 @@
       {{each data as perf}}
         <tr class="row100 body">
           {{each perf}}
-          <td class="cell100">{{$value}}</td>
+          <td class="cell100" title="{{$value}}">{{$value}}</td>
           {{/each}}
         </tr>
       {{/each}}

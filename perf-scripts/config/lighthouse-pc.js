@@ -17,7 +17,7 @@ module.exports = (port) => ({
   ],
   port: port,
   throttling: {
-    cpuSlowdownMultiplier: 4,
+    cpuSlowdownMultiplier: 0,
     rttMs: 0,
     throughputKbps: 0,
     requestLatencyMs: 0,

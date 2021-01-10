@@ -244,6 +244,8 @@ th, td {
   color: #808080;
   line-height: 1.4;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .table100.ver1 .table100-body tr:nth-child(even) {
