@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>UI5 WebComponents Performance</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css" />
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css" />
+    <link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" type="text/css" href="css/util.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+  </head>
+  <body>
+    <div class="limiter">
+      <div class="container-table100">
+        <div class="wrap-table100">
+          <div class="table100 ver1 m-b-110">
+            <div class="table100-head">
+              <table style="table-layout: fixed;">
+                <thead id="perf-data-title">
+                </thead>
+              </table>
+            </div>
+            <div class="table100-body js-pscroll">
+              <table style="table-layout: fixed;">
+                <tbody id="perf-data-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/select2/select2.min.js"></script>
+    <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="vendor/template/art-template.js"></script>
+    <script type="text/javascript" src="performance-data.js"></script>
+    <script id="tmpl-performance-title" type="text/html">
+      <tr class="row100 head">
+        <th class="cell100">Case</th>
+        {{each title}}
+        <th class="cell100">{{$value}}</th>
+        {{/each}}
+      </tr>
+    </script>
+    <script id="tmpl-performance-data" type="text/html">
+      {{each data as perf}}
+        <tr class="row100 body">
+          {{each perf}}
+          <td class="cell100" title="{{$value}}">{{$value}}</td>
+          {{/each}}
+        </tr>
+      {{/each}}
+    </script>
+    <script type="text/javascript">
+      // art template
+      var titleDom = template("tmpl-performance-title", window.ui5_performance_data);
+      var data = template("tmpl-performance-data", window.ui5_performance_data);
+      $("#perf-data-title").html(titleDom);
+      $("#perf-data-body").html(data);
+    </script>
+  </body>
+</html>
