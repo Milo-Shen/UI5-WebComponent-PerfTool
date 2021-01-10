@@ -9,6 +9,7 @@ const lighthouse = require("lighthouse");
 const chromeLauncher = require("chrome-launcher");
 const log = require("lighthouse-logger");
 const git = require("simple-git")();
+const pkg = require("../package.json");
 
 // Import self code
 const IO = require("./io");
@@ -16,7 +17,7 @@ const { tryUsePort } = require("./network");
 const { execCommand } = require("./util");
 const { convertHtmlToReact } = require("./compile");
 const lighthouseCfg_Global = require("./config/lighthouse-global");
-const lighthouseCfg_Pc = require("./config/lighthouse-pc");
+const lighthouseCfg_PC = require("./config/lighthouse-pc");
 const metricCfg = require("./config/metrics");
 
 // Paths
@@ -31,7 +32,6 @@ const converted_main = path.resolve(dirname, "converted/main");
 const converted_fiori = path.resolve(dirname, "converted/fiori");
 const display_data = path.resolve(dirname, "display/performance-data.js");
 const build = path.resolve(dirname, "build");
-const output = path.resolve(dirname, "output");
 
 // Constant
 const EOL = os.EOL;
@@ -39,6 +39,7 @@ const Platform = os.platform();
 const encoding = "utf8";
 const jsSuffix = ".js";
 const tagReg = /tag: *."(.*?)",/gi;
+const Version = pkg.dependencies["@ui5/webcomponents"];
 const display_prefix = "window.ui5_performance_data = ";
 
 // Store
@@ -69,6 +70,42 @@ function generateMap(folderPath) {
   });
 }
 
+/**
+ * function: run lighthouse 7.0
+ * @param caseName
+ * @param buildPath
+ * @param port
+ * @param config
+ * @param mode
+ * @returns {Promise<[]>}
+ */
+async function runLighthouse(caseName, buildPath, port, config, mode = "mobile") {
+  const scoreArray = [];
+  const runnerResult = await lighthouse(`http://127.0.0.1:${port}`, config);
+
+  // save the lighthouse report
+  const reportHtml = String(runnerResult.report);
+  const destPath = path.resolve(buildPath, `lighthouseReport-${mode}.html`);
+  fs.writeFileSync(destPath, reportHtml, encoding);
+
+  // insert the case name
+  scoreArray.push(caseName);
+
+  // save performance data to display table
+  config.onlyCategories.forEach((x) => {
+    let performance = Number(runnerResult.lhr.categories[x].score * 100);
+    performance = parseInt(performance) === performance ? performance : performance.toPrecision(2);
+    scoreArray.push(performance);
+  });
+  config.onlyAudits.forEach((x) => {
+    scoreArray.push(runnerResult.lhr.audits[x].displayValue);
+  });
+  return scoreArray;
+}
+
+/**
+ * function: main entry
+ */
 (async function f() {
   const isUI5Available = fs.existsSync(ui5_folder);
   if (!isUI5Available) {
@@ -140,22 +177,24 @@ function generateMap(folderPath) {
     const server = app.listen(port, async () => {
       console.log(`express server start on port: ${port}`);
 
-      let testOutput = "";
       let ui5PerfData = {};
-      curTask = 0;
+      let curTask = 0;
       totalTask = compiledArray.length;
 
-      // init lighthouse config
+      // init lighthouse config - Global & PC
       const _lighthouseCfg = lighthouseCfg_Global(null);
+      const _lighthouseCfgPC = lighthouseCfg_PC(null);
+
+      // set the default setting of lighthouse
+      ui5PerfData.version = Version;
       ui5PerfData.title = [
         ..._lighthouseCfg.onlyCategories.map((x) => x.toUpperCase()),
         ..._lighthouseCfg.onlyAudits.map((x) => String(metricCfg[x]).toUpperCase()),
       ];
 
-      console.log("Start to test UI5-WebComponents with lighthouse ( mobile mode )");
+      console.log("Start to test UI5-WebComponents with lighthouse");
       for (let i = 0, len = compiledArray.length; i < len; i++) {
-        let scoreStr = "";
-        let scoreArray = [];
+        // let scoreArray = [];
         const builtSrc = compiledArray[i];
         const caseName = path.basename(path.dirname(builtSrc));
 
@@ -163,45 +202,26 @@ function generateMap(folderPath) {
         IO.resetFolderRecursive(build);
         IO.copyFileRecursive(builtSrc, build);
 
-        // using LightHouse
+        // run LightHouse
         log.setLevel("info");
         const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless"] });
+        const dirBuiltPath = path.dirname(builtSrc);
+        const testedName = path.basename(dirBuiltPath);
 
         // The option of lighthouse
         const config = { ..._lighthouseCfg, port: chrome.port };
-        const runnerResult = await lighthouse(`http://127.0.0.1:${port}`, config);
+        const configPC = { ..._lighthouseCfgPC, port: chrome.port };
 
-        // save the lighthouse report
-        const reportHtml = String(runnerResult.report);
-        const dirBuiltPath = path.dirname(builtSrc);
-        const testedName = path.basename(dirBuiltPath);
-        const destPath = path.resolve(dirBuiltPath, "lighthouseReport.html");
-        fs.writeFileSync(destPath, reportHtml, encoding);
+        // Run lighthouse - mobile mode
+        const scoreMobile = await runLighthouse(caseName, dirBuiltPath, port, config, "mobile");
+        const scorePC = await runLighthouse(caseName, dirBuiltPath, port, configPC, "PC");
 
-        // insert the case name
-        scoreArray.push(caseName);
+        ui5PerfData.data = ui5PerfData.data || {};
+        ui5PerfData.data.mobile = ui5PerfData.data.mobile || [];
+        ui5PerfData.data.pc = ui5PerfData.data.pc || [];
+        ui5PerfData.data.mobile.push(scoreMobile);
+        ui5PerfData.data.pc.push(scorePC);
 
-        // save performance data to display table
-        _lighthouseCfg.onlyCategories.forEach((x) => {
-          const performance = runnerResult.lhr.categories[x].score * 100;
-          scoreArray.push(performance);
-        });
-        _lighthouseCfg.onlyAudits.forEach((x) => {
-          scoreArray.push(runnerResult.lhr.audits[x].displayValue);
-        });
-        ui5PerfData.data = ui5PerfData.data || [];
-        ui5PerfData.data.push(scoreArray);
-
-        // save performance data to txt ( deprecated )
-        const categories = runnerResult.lhr.categories;
-        for (let key in categories) {
-          if (categories.hasOwnProperty(key)) {
-            const score = categories[key].score * 100;
-            scoreStr += `${key}: ${score}|`;
-          }
-        }
-
-        testOutput += `|${testedName}| ${scoreStr}${EOL}`;
         console.log("Report is done for: ", testedName);
 
         await chrome.kill();
@@ -214,11 +234,10 @@ function generateMap(folderPath) {
         );
       }
 
+      // write performance test result to file
       const perfDataJs = `${display_prefix}${JSON.stringify(ui5PerfData)}`;
       fs.writeFileSync(display_data, perfDataJs, encoding);
 
-      const outputFile = path.resolve(output, "score.txt");
-      fs.writeFileSync(outputFile, testOutput, encoding);
       server.close();
     });
   });

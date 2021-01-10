@@ -17,17 +17,31 @@
     <div class="limiter">
       <div class="container-table100">
         <div class="wrap-table100">
+          <h2 class="perf-title">Lighthouse Score - Mobile Mode</h2>
           <div class="table100 ver1 m-b-110">
             <div class="table100-head">
-              <table style="table-layout: fixed;">
-                <thead id="perf-data-title">
-                </thead>
+              <table style="table-layout: fixed">
+                <thead class="perf-data-title"></thead>
               </table>
             </div>
             <div class="table100-body js-pscroll">
-              <table style="table-layout: fixed;">
-                <tbody id="perf-data-body">
-                </tbody>
+              <table style="table-layout: fixed">
+                <tbody id="perf-data-mobile"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="wrap-table100">
+          <h2 class="perf-title">Lighthouse Score - PC Mode</h2>
+          <div class="table100 ver1 m-b-110">
+            <div class="table100-head">
+              <table style="table-layout: fixed">
+                <thead class="perf-data-title"></thead>
+              </table>
+            </div>
+            <div class="table100-body js-pscroll">
+              <table style="table-layout: fixed">
+                <tbody id="perf-data-pc"></tbody>
               </table>
             </div>
           </div>
@@ -52,19 +66,21 @@
     </script>
     <script id="tmpl-performance-data" type="text/html">
       {{each data as perf}}
-        <tr class="row100 body">
-          {{each perf}}
-          <td class="cell100" title="{{$value}}">{{$value}}</td>
-          {{/each}}
-        </tr>
+      <tr class="row100 body">
+        {{each perf}}
+        <td class="cell100" title="{{$value}}">{{$value}}</td>
+        {{/each}}
+      </tr>
       {{/each}}
     </script>
     <script type="text/javascript">
       // art template
       var titleDom = template("tmpl-performance-title", window.ui5_performance_data);
-      var data = template("tmpl-performance-data", window.ui5_performance_data);
-      $("#perf-data-title").html(titleDom);
-      $("#perf-data-body").html(data);
+      var perfMobile = template("tmpl-performance-data", { data: window.ui5_performance_data.data.mobile });
+      var perfPC = template("tmpl-performance-data", { data: window.ui5_performance_data.data.pc });
+      $(".perf-data-title").html(titleDom);
+      $("#perf-data-mobile").html(perfMobile);
+      $("#perf-data-pc").html(perfPC);
     </script>
   </body>
 </html>

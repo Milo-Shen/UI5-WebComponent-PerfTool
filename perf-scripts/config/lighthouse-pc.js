@@ -5,6 +5,7 @@
  */
 module.exports = (port) => ({
   output: "html",
+  preset: "desktop",
   onlyCategories: ["performance", "accessibility", "best-practices", "seo"],
   onlyAudits: [
     "first-contentful-paint",

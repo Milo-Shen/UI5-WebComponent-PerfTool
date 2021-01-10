@@ -9,13 +9,13 @@ async function portIsOccupied(port) {
   return new Promise((resolve, reject) => {
     let server = net.createServer().listen(port);
     server.on("listening", function () {
-      console.log("The port【" + port + "】 is available.");
+      console.log("The port[" + port + "] is available.");
       server.close();
       resolve(port);
     });
     server.on("error", function (err) {
       if (err.code === "EADDRINUSE") {
-        console.log("The port【" + port + "】 is occupied, please change other port.");
+        console.log("The port[" + port + "] is occupied, please change other port.");
         reject(err);
       }
     });
