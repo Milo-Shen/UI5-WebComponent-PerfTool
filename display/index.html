@@ -15,9 +15,10 @@
   </head>
   <body>
     <div class="limiter">
+      <h2 class="perf-title">Version: version</h2>
       <div class="container-table100">
         <div class="wrap-table100">
-          <h2 class="perf-title">Lighthouse Score - Mobile Mode</h2>
+          <h3 class="perf-title">Lighthouse Score - Mobile Mode</h3>
           <div class="table100 ver1 m-b-110">
             <div class="table100-head">
               <table style="table-layout: fixed">
@@ -32,7 +33,7 @@
           </div>
         </div>
         <div class="wrap-table100">
-          <h2 class="perf-title">Lighthouse Score - PC Mode</h2>
+          <h3 class="perf-title">Lighthouse Score - PC Mode</h3>
           <div class="table100 ver1 m-b-110">
             <div class="table100-head">
               <table style="table-layout: fixed">
@@ -78,6 +79,7 @@
       var titleDom = template("tmpl-performance-title", window.ui5_performance_data);
       var perfMobile = template("tmpl-performance-data", { data: window.ui5_performance_data.data.mobile });
       var perfPC = template("tmpl-performance-data", { data: window.ui5_performance_data.data.pc });
+      $("h2").html($("h2").html().replace('version',window.ui5_performance_data.version));
       $(".perf-data-title").html(titleDom);
       $("#perf-data-mobile").html(perfMobile);
       $("#perf-data-pc").html(perfPC);
