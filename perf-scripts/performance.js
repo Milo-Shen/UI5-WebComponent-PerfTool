@@ -236,6 +236,8 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
 
       // write performance test result to file
       const perfDataJs = `${display_prefix}${JSON.stringify(ui5PerfData)}`;
+      console.log(display_data);
+      console.log(perfDataJs);
       fs.writeFileSync(display_data, perfDataJs, encoding);
 
       server.close();
