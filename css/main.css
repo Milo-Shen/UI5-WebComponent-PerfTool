@@ -527,3 +527,9 @@ th, td {
 .table100.ver5 .ps__rail-y .ps__thumb-y::before {
   background-color: #cccccc;
 }
+
+.perf-title{
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+}
