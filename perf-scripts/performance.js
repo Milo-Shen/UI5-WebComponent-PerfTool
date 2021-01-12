@@ -34,7 +34,7 @@ const converted_fiori = path.resolve(dirname, "converted/fiori");
 const display_path = path.resolve(dirname, "display");
 const display_data = path.resolve(display_path, "result/performance-data.js");
 const build = path.resolve(dirname, "build");
-const output = path.resolve(dirname, "output");
+const output = path.resolve(dirname, "outputPage");
 
 // Constant
 const EOL = os.EOL;
