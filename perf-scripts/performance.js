@@ -30,7 +30,7 @@ const ui5_main_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents/dis
 const ui5_fiori_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents-fiori/dist");
 const converted_main = path.resolve(dirname, "converted/main");
 const converted_fiori = path.resolve(dirname, "converted/fiori");
-const display_data = path.resolve(dirname, "display/performance-data.js");
+const display_data = path.resolve(dirname, "display/result/performance-data.js");
 const build = path.resolve(dirname, "build");
 
 // Constant
@@ -110,6 +110,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
   const isUI5Available = fs.existsSync(ui5_folder);
   if (!isUI5Available) {
     await git.clone(ui5_repo, ui5_folder);
+    console.log('git clone https://github.com/SAP/ui5-webcomponents.git successfully !');
   }
 
   // Prepare folder - main & fiori
@@ -236,8 +237,6 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
 
       // write performance test result to file
       const perfDataJs = `${display_prefix}${JSON.stringify(ui5PerfData)}`;
-      console.log(display_data);
-      console.log(perfDataJs);
       fs.writeFileSync(display_data, perfDataJs, encoding);
 
       server.close();
