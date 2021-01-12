@@ -18,10 +18,12 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <h4>Avatar Shapes</h4>
+      <h4>Basic Avatar</h4>
       <div className="snippet">
-        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_3.png" shape="Circle"></ui5-avatar>
-        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_4.png" shape="Square"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/man_avatar_1.png"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_4.png"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/woman_avatar_5.png" shape="Square"></ui5-avatar>
+        <ui5-avatar image="../../../assets/images/avatars/man_avatar_3.png" shape="Square"></ui5-avatar>
       </div>
     </div>
   );

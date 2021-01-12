@@ -3,6 +3,7 @@ const os = require("os");
 const fs = require("fs");
 const path = require("path");
 const jsDom = require("jsdom");
+const chalk = require('chalk');
 const prettier = require("prettier");
 
 // Import self code
@@ -118,7 +119,7 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
       builtArray.push({ path: builtFile, sampleName });
       IO.mkFolderSyncRecursive(builtPath);
       fs.writeFileSync(builtFile, result, encoding);
-      console.log(`UI5 example converted: ${sampleName}`);
+      console.log(chalk.cyan(`UI5 example converted: ${sampleName}`));
     });
   });
 }

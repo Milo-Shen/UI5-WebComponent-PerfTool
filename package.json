@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@ui5/webcomponents": "0.27.3",
-    "@ui5/webcomponents-fiori": "0.27.3"
+    "@ui5/webcomponents-fiori": "0.27.3",
+    "chalk": "^4.1.0"
   },
   "bin": {
     "performance": "perf-scripts/performance.js"
@@ -127,7 +128,7 @@
     "jest-resolve": "24.9.0",
     "jest-watch-typeahead": "0.4.2",
     "jsdom": "^16.2.2",
-    "lighthouse": "^6.1.0",
+    "lighthouse": "^7.0.0",
     "lighthouse-logger": "^1.2.0",
     "mini-css-extract-plugin": "0.9.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",

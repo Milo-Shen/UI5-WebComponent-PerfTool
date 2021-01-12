@@ -7,6 +7,7 @@ const serveStatic = require("serve-static");
 const compression = require("compression");
 const lighthouse = require("lighthouse");
 const chromeLauncher = require("chrome-launcher");
+const chalk = require('chalk');
 const log = require("lighthouse-logger");
 const git = require("simple-git")();
 const pkg = require("../package.json");
@@ -30,8 +31,10 @@ const ui5_main_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents/dis
 const ui5_fiori_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents-fiori/dist");
 const converted_main = path.resolve(dirname, "converted/main");
 const converted_fiori = path.resolve(dirname, "converted/fiori");
-const display_data = path.resolve(dirname, "display/result/performance-data.js");
+const display_path = path.resolve(dirname, "display");
+const display_data = path.resolve(display_path, "result/performance-data.js");
 const build = path.resolve(dirname, "build");
+const output = path.resolve(dirname, "output");
 
 // Constant
 const EOL = os.EOL;
@@ -110,7 +113,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
   const isUI5Available = fs.existsSync(ui5_folder);
   if (!isUI5Available) {
     await git.clone(ui5_repo, ui5_folder);
-    console.log('git clone https://github.com/SAP/ui5-webcomponents.git successfully !');
+    console.log(chalk.bold.green("git clone https://github.com/SAP/ui5-webcomponents.git successfully !"));
   }
 
   // Prepare folder - main & fiori
@@ -127,6 +130,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
   const builtArray = [];
   const compiledArray = [];
 
+  console.log(chalk.bold.green(`Start to convert UI5 Component examples to react project ...`))
   // Generate examples - main
   convertHtmlToReact(ui5_main_samples, converted_main, builtArray, mapTag, keyMap);
 
@@ -134,7 +138,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
   convertHtmlToReact(ui5_fiori_samples, converted_fiori, builtArray, mapTag, keyMap);
 
   // generate react project
-  console.log("Start to compile examples ...");
+  console.log(chalk.bold.green("Start to compile examples ..."));
   const appJs = path.resolve(dirname, "src/App.js");
   const appContent = fs.readFileSync(appJs, encoding);
   const start = new Date();
@@ -143,7 +147,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
 
   for (let i = 0, len = builtArray.length; i < len; i++) {
     const { path: file, sampleName } = builtArray[i];
-    console.log(`compiling: ${sampleName}`);
+    console.log(chalk.bold.green(`compiling: ${sampleName}`));
     const fileContent = fs.readFileSync(file, encoding);
     fs.writeFileSync(appJs, fileContent, encoding);
     const folder = path.dirname(file);
@@ -153,13 +157,13 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
     fs.renameSync(build, destBuild);
     const progress = +((++curTask / totalTask) * 100).toFixed(2);
     const elapsedTime = +((new Date() - start) / 1000).toFixed(2);
-    console.log(
-      `build progress: ${progress}%, current: ${curTask}, total task: ${totalTask}, elapsed time: ${elapsedTime} s`
-    );
+    console.log(chalk.cyan(
+        `build progress: ${progress}%, current: ${curTask}, total task: ${totalTask}, elapsed time: ${elapsedTime} s`
+    ));
   }
 
   fs.writeFileSync(appJs, appContent, encoding);
-  console.log("build successfully !");
+  console.log(chalk.bold.green("build successfully !"));
 
   // create express server
   const app = express();
@@ -176,7 +180,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
   // open express server
   await tryUsePort(5001, (port) => {
     const server = app.listen(port, async () => {
-      console.log(`express server start on port: ${port}`);
+      console.log(chalk.bold.green(`express server start on port: ${port}`));
 
       let ui5PerfData = {};
       let curTask = 0;
@@ -193,7 +197,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
         ..._lighthouseCfg.onlyAudits.map((x) => String(metricCfg[x]).toUpperCase()),
       ];
 
-      console.log("Start to test UI5-WebComponents with lighthouse");
+      console.log(chalk.bold.green("Start to test UI5-WebComponents with lighthouse"));
       for (let i = 0, len = compiledArray.length; i < len; i++) {
         // let scoreArray = [];
         const builtSrc = compiledArray[i];
@@ -223,16 +227,16 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
         ui5PerfData.data.mobile.push(scoreMobile);
         ui5PerfData.data.pc.push(scorePC);
 
-        console.log("Report is done for: ", testedName);
+        console.log(chalk.green("Report is done for: ", testedName));
 
         await chrome.kill();
 
         // calculate time
         const progress = +((++curTask / totalTask) * 100).toFixed(2);
         const elapsedTime = +((new Date() - start) / 1000).toFixed(2);
-        console.log(
-          `test progress: ${progress}%, current: ${curTask}, total task: ${totalTask}, elapsed time: ${elapsedTime} s ${EOL}`
-        );
+        console.log(chalk.cyan(
+            `test progress: ${progress}%, current: ${curTask}, total task: ${totalTask}, elapsed time: ${elapsedTime} s ${EOL}`
+        ));
       }
 
       // write performance test result to file
@@ -242,4 +246,8 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
       server.close();
     });
   });
+
+  console.log(chalk.bold.green("generate gh-page files"));
+  IO.resetFolderRecursive(output);
+  IO.copyFileRecursive(display_path, output);
 })();
