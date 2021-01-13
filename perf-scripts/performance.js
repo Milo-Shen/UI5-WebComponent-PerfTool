@@ -22,6 +22,7 @@ const lighthouseCfg_PC = require("./config/lighthouse-pc");
 const metricCfg = require("./config/metrics");
 
 // Paths
+const buildVersion = +new Date();
 const dirname = path.dirname(__dirname);
 const ui5_repo = "https://github.com/SAP/ui5-webcomponents.git";
 const ui5_folder = path.resolve(dirname, "ui5-webcomponents");
@@ -32,9 +33,9 @@ const ui5_fiori_dist = path.resolve(dirname, "node_modules/@ui5/webcomponents-fi
 const converted_main = path.resolve(dirname, "converted/main");
 const converted_fiori = path.resolve(dirname, "converted/fiori");
 const display_path = path.resolve(dirname, "display");
-const display_data = path.resolve(display_path, "result/performance-data.js");
+const display_html = path.resolve(display_path, "index.html");
+const display_data = path.resolve(display_path, `result/performance-data-${buildVersion}.js`);
 const build = path.resolve(dirname, "build");
-const output = path.resolve(dirname, "outputPage");
 
 // Constant
 const EOL = os.EOL;
@@ -248,6 +249,7 @@ async function runLighthouse(caseName, buildPath, port, config, mode = "mobile")
   });
 
   console.log(chalk.bold.green("generate gh-page files"));
-  IO.resetFolderRecursive(output);
-  IO.copyFileRecursive(display_path, output);
+  let html = fs.readFileSync(display_html, encoding);
+  html = html.replace("%perf-version%", buildVersion);
+  fs.writeFileSync(display_html, html, encoding); 
 })();
