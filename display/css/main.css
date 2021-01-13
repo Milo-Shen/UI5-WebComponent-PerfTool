@@ -230,6 +230,7 @@ th, td {
 [ Ver1 ]*/
 
 .table100.ver1 th {
+  cursor: pointer;
   font-family: Lato-Bold;
   color: #fff;
   line-height: 1.4;

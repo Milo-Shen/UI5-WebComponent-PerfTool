@@ -22,7 +22,7 @@
           <div class="table100 ver1 m-b-110">
             <div class="table100-head">
               <table style="table-layout: fixed">
-                <thead class="perf-data-title"></thead>
+                <thead class="perf-data-title" data-mode="mobile"></thead>
               </table>
             </div>
             <div class="table100-body js-pscroll">
@@ -37,7 +37,7 @@
           <div class="table100 ver1 m-b-110">
             <div class="table100-head">
               <table style="table-layout: fixed">
-                <thead class="perf-data-title"></thead>
+                <thead class="perf-data-title" data-mode="pc"></thead>
               </table>
             </div>
             <div class="table100-body js-pscroll">
@@ -58,7 +58,7 @@
     <script type="text/javascript" src="vendor/template/art-template.js"></script>
     <script type="text/javascript" src="result/performance-data-%perf-version%.js"></script>
     <script id="tmpl-performance-title" type="text/html">
-      <tr class="row100 head">
+      <tr class="row100 head metric">
         <th class="cell100">Case</th>
         {{each title}}
         <th class="cell100">{{$value}}</th>
@@ -79,10 +79,38 @@
       var titleDom = template("tmpl-performance-title", window.ui5_performance_data);
       var perfMobile = template("tmpl-performance-data", { data: window.ui5_performance_data.data.mobile });
       var perfPC = template("tmpl-performance-data", { data: window.ui5_performance_data.data.pc });
-      $("h2").html($("h2").html().replace('version',window.ui5_performance_data.version));
+      $("h2").html($("h2").html().replace("version", window.ui5_performance_data.version));
       $(".perf-data-title").html(titleDom);
       $("#perf-data-mobile").html(perfMobile);
       $("#perf-data-pc").html(perfPC);
+
+      Array.prototype.slice.call(document.getElementsByClassName("metric")).forEach(function (x) {
+        x.addEventListener("click", function (e) {
+          var index = window.ui5_performance_data.title.indexOf(e.target.innerHTML.trim()) + 1;
+          var mode = e.target.parentElement.parentElement.dataset.mode;
+          var sort = e.target.dataset.sort;
+          var data = window.ui5_performance_data.data[mode];
+          if (sort === "up") {
+            e.target.setAttribute("data-sort", "down");
+            data = data.sort(function (a, b) {
+              return parseFloat(b[index]) - parseFloat(a[index]);
+            });
+          } else {
+            e.target.setAttribute("data-sort", "up");
+            data = data.sort(function (a, b) {
+              return parseFloat(a[index]) - parseFloat(b[index]);
+            });
+          }
+          if (mode === "pc") {
+            var perfPC = template("tmpl-performance-data", { data: data });
+            $("#perf-data-pc").html(perfPC);
+          }
+          if (mode === "mobile") {
+            var perfMobile = template("tmpl-performance-data", { data: data });
+            $("#perf-data-mobile").html(perfMobile);
+          }
+        });
+      });
     </script>
   </body>
 </html>
