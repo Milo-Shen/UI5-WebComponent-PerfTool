@@ -10,8 +10,8 @@
     "deploy": "gh-pages -d display"
   },
   "dependencies": {
-    "@ui5/webcomponents": "0.29.1",
-    "@ui5/webcomponents-fiori": "0.29.1"
+    "@ui5/webcomponents": "0.29.4",
+    "@ui5/webcomponents-fiori": "0.29.4"
   },
   "bin": {
     "performance": "perf-scripts/performance.js"
