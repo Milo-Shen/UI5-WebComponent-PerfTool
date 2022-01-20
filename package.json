@@ -1,6 +1,6 @@
 {
-  "name": "myapp",
-  "version": "0.1.1",
+  "name": "ui5-web-component-perf-tool",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node scripts/start.js",
@@ -10,8 +10,12 @@
     "deploy": "gh-pages -d display"
   },
   "dependencies": {
-    "@ui5/webcomponents": "0.29.20",
-    "@ui5/webcomponents-fiori": "0.29.20"
+    "@ui5/webcomponents": "1.0.2",
+    "@ui5/webcomponents-base": "1.0.2",
+    "@ui5/webcomponents-fiori": "1.0.2",
+    "@ui5/webcomponents-icons": "1.0.2",
+    "@ui5/webcomponents-localization": "1.0.2",
+    "@ui5/webcomponents-theming": "1.0.2"
   },
   "bin": {
     "performance": "perf-scripts/performance.js"
@@ -101,9 +105,9 @@
     "babel-loader": "8.1.0",
     "babel-plugin-named-asset-import": "^0.3.6",
     "babel-preset-react-app": "^9.1.2",
-    "chalk": "^4.1.0",
     "camelcase": "^5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.3.0",
+    "chalk": "^4.1.0",
     "chrome-launcher": "^0.13.4",
     "compression": "^1.7.4",
     "css-loader": "3.4.2",
@@ -131,6 +135,7 @@
     "lighthouse": "^7.0.0",
     "lighthouse-logger": "^1.2.0",
     "mini-css-extract-plugin": "0.9.0",
+    "npm-check-updates": "^12.1.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.6.4",
     "postcss-flexbugs-fixes": "4.1.0",
