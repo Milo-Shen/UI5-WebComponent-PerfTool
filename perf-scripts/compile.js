@@ -3,7 +3,9 @@ const os = require("os");
 const fs = require("fs");
 const path = require("path");
 const jsDom = require("jsdom");
-const chalk = require('chalk');
+const htmlparser2 = require("htmlparser2");
+const render = require("dom-serializer").default;
+const chalk = require("chalk");
 const prettier = require("prettier");
 
 // Import self code
@@ -82,6 +84,7 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
           } else importJsx += `\/\/ ignore import ${tag} ${EOL}`;
         });
       let innerJSX = section.innerHTML;
+      innerJSX = render(htmlparser2.parseDocument(innerJSX), { selfClosingTags: true });
       innerJSX = prettier.format(innerJSX, { parser: "html", printWidth: 200 });
 
       // convert html syntax to react syntax ( class -> className & style -> {{ style name: style value }} )
