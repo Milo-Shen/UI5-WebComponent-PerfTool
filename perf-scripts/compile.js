@@ -10,7 +10,7 @@ const prettier = require("prettier");
 
 // Import self code
 const IO = require("./io");
-const { traversal, removeComment } = require("./util");
+const { traversal, removeComment, removeIllegalAttributes } = require("./util");
 const prettierConfig = require("../prettier.config");
 
 // Paths
@@ -39,6 +39,7 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
     const extname = path.extname(file);
     if (extname !== htmlSuffix) return;
     const basename = path.basename(file);
+
     const fileContent = fs.readFileSync(file, encoding);
     const dom = new jsDom.JSDOM(fileContent);
 
@@ -69,6 +70,7 @@ function convertHtmlToReact(samples, convertedFolder, builtArray, mapTag, keyMap
       removeComment(section);
       let importJsx = "";
       let tags = traversal(section, (_dom) => {
+        removeIllegalAttributes(_dom);
         removeComment(_dom);
       });
       tags = tags.map((x) => String(x.tagName).toLowerCase());

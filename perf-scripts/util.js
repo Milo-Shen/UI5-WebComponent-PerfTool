@@ -1,4 +1,5 @@
 const { exec } = require("child_process");
+
 /**
  * function: traversal all inner dom nodes
  * @param _dom
@@ -28,8 +29,8 @@ function traversal(_dom, domCallback) {
  * @param command
  * @returns {Promise<unknown>}
  */
-const execCommand = (command) =>
-  new Promise((resolve, reject) =>
+function execCommand(command) {
+  return new Promise((resolve, reject) =>
     exec(command, (error, stdout, stderr) => {
       const _error = error || stderr;
       if (_error) {
@@ -41,6 +42,17 @@ const execCommand = (command) =>
       resolve(stdout);
     })
   );
+}
+
+function removeIllegalAttributes(dom) {
+  let attributes = dom.getAttributeNames();
+  for (let i = 0, len = attributes.length; i < len; i++) {
+    let attribute = attributes[i];
+    if (attribute === '"') {
+      dom.removeAttribute(attribute);
+    }
+  }
+}
 
 /**
  * function: remove command from a DOM element
@@ -48,8 +60,10 @@ const execCommand = (command) =>
  */
 const removeComment = (dom) => {
   dom.childNodes.forEach((node) => {
-    if (node.constructor.name.toLowerCase() === "comment") node.remove();
+    if (node.constructor.name.toLowerCase() === "comment") {
+      node.remove();
+    }
   });
 };
 
-module.exports = { traversal, execCommand, removeComment };
+module.exports = { traversal, execCommand, removeComment, removeIllegalAttributes };
