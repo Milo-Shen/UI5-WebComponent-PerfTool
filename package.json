@@ -10,12 +10,12 @@
     "deploy": "gh-pages -d display"
   },
   "dependencies": {
-    "@ui5/webcomponents": "1.10.5",
-    "@ui5/webcomponents-base": "1.10.5",
-    "@ui5/webcomponents-fiori": "1.10.5",
-    "@ui5/webcomponents-icons": "1.10.5",
-    "@ui5/webcomponents-localization": "1.10.5",
-    "@ui5/webcomponents-theming": "1.10.5",
+    "@ui5/webcomponents": "1.11.0",
+    "@ui5/webcomponents-base": "1.11.0",
+    "@ui5/webcomponents-fiori": "1.11.0",
+    "@ui5/webcomponents-icons": "1.11.0",
+    "@ui5/webcomponents-localization": "1.11.0",
+    "@ui5/webcomponents-theming": "1.11.0",
     "dom-serializer": "^2.0.0",
     "htmlparser2": "^8.0.1"
   },
